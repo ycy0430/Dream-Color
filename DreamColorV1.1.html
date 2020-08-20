@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>背景颜色预览器</title>
+    <style>
+        html {
+            height: 100%;
+        }
+        
+        body {
+            background: pink;
+            /* transition: background-color 2s; */
+        }
+        /* 双伪元素清除浮动 */
+        
+        .clearfix:before,
+        .clearfix:after {
+            content: "";
+            display: table;
+        }
+        
+        .clearfix:after {
+            clear: both;
+        }
+        
+        .clearfix {
+            *zoom: 1;
+        }
+        
+        .main {
+            width: 300px;
+            margin: 50px auto;
+            border: 1px solid #04BFBF;
+            padding: 20px;
+            background: rgba(255, 255, 255, .5);
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+        
+        .main span {
+            display: block;
+            border: 1px solid #04BFBF;
+            text-align: center;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .5);
+            cursor: pointer;
+            color: rgb(53, 3, 40);
+            padding: 5px;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 3px #ccc;
+        }
+        
+        .main i {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border-radius: 50%;
+            border: 1px solid #cccccc;
+            box-shadow: 3px 2px 3px #ccc;
+            margin: 15px;
+            cursor: pointer;
+        }
+        
+        .hd {
+            width: 100%;
+            border-bottom: 1px solid #04BFBF;
+            padding-bottom: 20px;
+            color: rgb(53, 3, 40);
+            text-shadow: 3px 3px 10px #ccc;
+        }
+        
+        .hd form {
+            float: left;
+            line-height: 32px;
+        }
+        
+        .hd input {
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        
+        .hd p {
+            margin: 0;
+            cursor: pointer;
+            line-height: 32px;
+        }
+        
+        .show {
+            float: right;
+            width: 120px;
+            border: 1px solid #ccc;
+            padding-left: 20px;
+            background: rgba(255, 255, 255, .5);
+            border-radius: 10px;
+        }
+        
+        .show i {
+            vertical-align: middle;
+            background: transparent;
+            margin: 5px;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <span>点击此处随机生成一排新的颜色</span>
+        <div class="hd clearfix">
+            <form action="">
+                <p><input type="radio" name="model" value="pure" id="pure" checked>纯色模式</p>
+                <p><input type="radio" name="model" value="gradual">渐变模式</p>
+            </form>
+            <div class="show">
+                选中： <i id="selected"></i> <br>预览：
+                <i id="preview"></i>
+            </div>
+        </div>
+    </div>
+    <script>
+        var btn = document.querySelector('span');
+        var div = document.querySelector('.main');
+
+        btn.addEventListener('click', function() {
+            for (var i = 0; i < 9; i++) {
+                createNewColor();
+            }
+        });
+
+
+        //生成新颜色
+        function createNewColor() {
+            var color = '#';
+            var arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f'];
+
+            function getRandom(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            for (var i = 0; i <= 5; i++) {
+                color += arr[getRandom(0, arr.length - 1)];
+            }
+            var ii = document.createElement('i');
+            var div = document.querySelector('.main');
+            div.appendChild(ii);
+            ii.style.background = color;
+        }
+        //阻止选中文字
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        })
+
+        //模式选择
+        //注册单选选中事件 TODO 可以设置窗口加载完就绑定 
+        var p = document.querySelectorAll('p');
+        var model1 = 'pure';
+        var model = document.getElementById('pure');
+        for (var i = 0; i < p.length; i++) {
+            p[i].addEventListener('click', function() {
+                var radio = this.querySelector('input');
+                radio.checked = true;
+            });
+            p[i].addEventListener('click', function() {
+                model.checked == true ? model1 = 'pure' : model1 = 'gradual';
+                console.log(model1);
+            });
+        }
+        //变背景颜色
+        document.body.style.background = 'pink';
+
+        function changebgc() {
+            //事件委托
+            var setbgc = document.body.style.background;
+            var ischoose = false;
+            var color = [];
+            color[0] = document.body.style.background
+            color[1] = document.body.style.background
+            color[2] = document.body.style.background
+            div.addEventListener('mouseover', function(e) {
+                var preview = document.getElementById('preview');
+
+                if (e.target.tagName == 'I') {
+                    if (model1 == 'pure') {
+                        setbgc = document.body.style.background;
+                        document.body.style.transitionProperty = 'background';
+                        document.body.style.transitionDuration = '1s';
+                        document.body.style.background = e.target.style.background;
+                        preview.style.background = e.target.style.background;
+                    } else if (model1 == 'gradual') {
+                        document.body.style.transition = 'background-position 1s';
+                        document.body.style.background = 'linear-gradient(to right, ' + color[1] + ',' + color[2] + ',' + e.target.style.background + ')';
+                        document.body.style.backgroundSize = '200%';
+                        document.body.style.backgroundPosition = '100% 0';
+                        console.log(color);
+                        preview.style.background = 'linear-gradient(to bottom right, ' + color[1] + ',' + color[2] + ',' + e.target.style.background + ')';
+                    }
+                }
+            })
+            div.addEventListener('click', function(e) {
+                var selected = document.getElementById('selected');
+                if (e.target.tagName == 'I') {
+                    if (model1 == 'pure') {
+                        document.body.style.background = e.target.style.background;
+                        setbgc = e.target.style.background;
+                        selected.style.background = e.target.style.background;
+                        console.log(e.target.style.background);
+                    } else if (model1 == 'gradual') {
+                        selected.style.background = 'linear-gradient(to bottom right, ' + color[1] + ',' + color[2] + ',' + e.target.style.background + ')';
+                        color.shift();
+                        color.shift();
+                        color.push(e.target.style.background);
+                        color.push(e.target.style.background);
+                        console.log(color);
+                        document.body.style.transition = 'background-position 0s';
+                        document.body.style.background = 'linear-gradient(to right, ' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+                        document.body.style.backgroundSize = '200%';
+                    }
+                    ischoose = true;
+                }
+            })
+            div.addEventListener('mouseout', function(e) {
+                var selected = document.getElementById('selected');
+                var preview = document.getElementById('preview');
+                if (e.target.tagName == 'I') {
+                    if (model1 == 'pure') {
+                        // document.body.style.transform = 'background-color 2s';
+                        document.body.style.background = setbgc;
+                        preview.style.background = '';
+                    } else if (model1 == 'gradual') {
+                        document.body.style.background = 'linear-gradient(to right, ' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+                        document.body.style.backgroundSize = '200%';
+                        document.body.style.backgroundPosition = '';
+                        console.log(color);
+                        preview.style.background = '';
+                    }
+                }
+            })
+        }
+        changebgc();
+    </script>
+</body>
+
+</html>
